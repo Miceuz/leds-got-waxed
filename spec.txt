@@ -1,0 +1,22 @@
+* 3 differential Audio inputs each for one channel
+* 16 LED outputs
+* 5, 5, 6 LEDS assigned to channels
+
+Audio level trigger is automatically set to 2/3 of full range.
+
+One of 5 effects can be assigned to each channel by means of a rotary switch, one potentiometer is available for each channel that is used to controll one aspect of the selected effect
+
+available effects:
+* VU meter - leds blink as in audio VU meter, potentiometer controlls overall brightness
+* Triggered VU meter - on trigger channels light up and turn down in a row, just like VU meter. Potentiometer controlls the speed of the effect.
+* Chase - channels light up one by one in a row when triggered. Potentiometer controlls the speed of the animation.
+* Blink - all channels fade in and fade out simultaneously on trigger. Potentiometer controlls speed of the fade.
+* Random - all channels blink randomly for duration set by potentiometer.
+
+
+THAT1247 was chosen as an audio front end. It's a go to nobrainer part when you want to do a differential line level signal translation. I did not want a journey while rolling my own, so I've chosen this part. I've used a 6dB part and configured it as an amplifier to increase signal level from proffessional line level (3.472V peak to peak) up to 7.2V peak to peak.
+
+Op amp creates a virtual ground midpoint. Single ended signal is AC coupled and limited by diode D1 to apply only positive peaks to ADC input. Capacitor C3 and resistor R4 form an antialiasing low pass filter. I'm going to run ADC at 250kHz, this will allow me to sample three channels at roughly 6kHz, this means our Nyquist frequency is 3kHz.
+
+The segments had to be put on the floor at 45 degree level. I have had a go with OpenSCAD to model feet to accomodate that.
+
