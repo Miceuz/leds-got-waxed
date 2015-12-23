@@ -12,7 +12,7 @@ public:
 	inline Effect *getEffect() {return effect;};
 	uint8_t inputId;
 	Effect *effect;
+	Output *output;
 private:
 	uint16_t level;
-	Output *output;
 };
