@@ -141,7 +141,7 @@ uint8_t dmxIsBlackout() {
 }
 
 uint16_t dmxGetBrightness(uint8_t channel) {
-	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 4), 0, 255, 0, 4095);
+	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 5), 0, 255, 0, 4095);
 }
 
 Effect* toEffect(uint8_t effectId) {
