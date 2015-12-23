@@ -29,6 +29,8 @@ uint16_t dmxGetTriggerLevel(uint8_t channel);
 uint16_t dmxGetTriggerHoldOff(uint8_t channel);
 uint8_t dmxIsDataAvaialble();
 uint16_t dmxGetBrightness(uint8_t channel);
+uint16_t dmxGetGain(uint8_t channel);
+
 uint8_t dmxIsBlackout();
 void blackout();
 
@@ -104,6 +106,7 @@ void loop() {
 				channels[i].effect->params.asStruct.triggerLevel = dmxGetTriggerLevel(i);
 				channels[i].effect->params.asStruct.triggerHoldOff = dmxGetTriggerHoldOff(i);
 				channels[i].effect->params.asStruct.maxBrightness = dmxGetBrightness(i);
+				channels[i].effect->params.asStruct.gain = dmxGetGain(i);
 			}
 		}
 		inputs->reset();
@@ -131,6 +134,14 @@ uint16_t dmxGetTriggerHoldOff(uint8_t channel) {
 	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 4), 0, 255, 0, 1000);
 }
 
+uint16_t dmxGetBrightness(uint8_t channel) {
+	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 5), 0, 255, 0, 4095);
+}
+
+uint16_t dmxGetGain(uint8_t channel) {
+	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 6), 0, 255, 256, 2048);
+}
+
 uint8_t dmxIsBlackout() {
 	for(int i = 0; i < DMX_SLAVE_CHANNELS; i++) {
 		if(0 != dmx_slave.getChannelValue(i+1)) {
@@ -138,10 +149,6 @@ uint8_t dmxIsBlackout() {
 		}
 	}
 	return 1;
-}
-
-uint16_t dmxGetBrightness(uint8_t channel) {
-	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 5), 0, 255, 0, 4095);
 }
 
 Effect* toEffect(uint8_t effectId) {

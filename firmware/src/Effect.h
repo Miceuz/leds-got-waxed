@@ -14,6 +14,7 @@ public:
 			uint16_t triggerLevel = 100;	
 			uint16_t triggerHoldOff = 0;
 			uint16_t maxBrightness = 4095;	
+			uint16_t gain = 1300;	
 		} asStruct;
 		uint16_t asArray[3];
 	};
