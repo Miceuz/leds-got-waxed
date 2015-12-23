@@ -28,6 +28,9 @@ public:
 	EffectParams params;
 
 protected:
+	uint16_t levels[16];		
+	uint8_t flags[16];		
+
 	uint16_t curLevel = 0;
 	uint32_t lastBlink;
 	uint8_t isNotTriggerHoldOff();
@@ -50,7 +53,6 @@ public:
 	RandomBlinkEffect();
 	void run(uint16_t newLevel, Output *output);
 private:
-	uint16_t levels[6];	
 };
 
 class ChaseEffect : public Effect {
@@ -58,7 +60,5 @@ public:
 	ChaseEffect();
 	void run(uint16_t newLevel, Output *output);
 private:
-	uint16_t levels[6];		
-	uint8_t flags[6];		
 };
 #endif
