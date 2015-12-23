@@ -12,7 +12,8 @@ public:
 			uint16_t attack = 0;
 			uint16_t decay = 40;
 			uint16_t triggerLevel = 100;	
-			uint16_t triggerHoldOff = 0;	
+			uint16_t triggerHoldOff = 0;
+			uint16_t maxBrightness = 4095;	
 		} asStruct;
 		uint16_t asArray[3];
 	};

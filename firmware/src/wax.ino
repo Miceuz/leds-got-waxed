@@ -28,6 +28,7 @@ uint16_t dmxGetDecay(uint8_t channel);
 uint16_t dmxGetTriggerLevel(uint8_t channel);
 uint16_t dmxGetTriggerHoldOff(uint8_t channel);
 uint8_t dmxIsDataAvaialble();
+uint16_t dmxGetBrightness(uint8_t channel);
 uint8_t dmxIsBlackout();
 void blackout();
 
@@ -81,26 +82,28 @@ void loop() {
 
 	if(isFrameTimeout()) {
 		Tlc.clear();
-	
-		for(int i = 0; i < MAX_INPUTS; i++) {
-			channels[i].read(inputs);
-			channels[i].runEffect();
+
+		if(dmxIsDataAvaialble() && dmxIsBlackout()) {
+			blackout();
+		} else {
+			for(int i = 0; i < MAX_INPUTS; i++) {
+				channels[i].read(inputs);
+				channels[i].runEffect();
+			}
+			Tlc.update();  
 		}
-		Tlc.update();  
+
 		lastOutputFrameSent = millis();
 
 		if(dmxIsDataAvaialble()) {
-			if(dmxIsBlackout()) {
-				blackout();
-			} else {
-				for(uint8_t i = 0; i < MAX_INPUTS; i++) {
-					if(channels[i].effect->id != dmxGetEffectId(i)) {
-						channels[i].setEffect(toEffect(dmxGetEffectId(i)));
-					}
-					channels[i].effect->params.asStruct.decay = dmxGetDecay(i);
-					channels[i].effect->params.asStruct.triggerLevel = dmxGetTriggerLevel(i);
-					channels[i].effect->params.asStruct.triggerHoldOff = dmxGetTriggerHoldOff(i);
+			for(uint8_t i = 0; i < MAX_INPUTS; i++) {
+				if(channels[i].effect->id != dmxGetEffectId(i)) {
+					channels[i].setEffect(toEffect(dmxGetEffectId(i)));
 				}
+				channels[i].effect->params.asStruct.decay = dmxGetDecay(i);
+				channels[i].effect->params.asStruct.triggerLevel = dmxGetTriggerLevel(i);
+				channels[i].effect->params.asStruct.triggerHoldOff = dmxGetTriggerHoldOff(i);
+				channels[i].effect->params.asStruct.maxBrightness = dmxGetBrightness(i);
 			}
 		}
 		inputs->reset();
@@ -137,6 +140,10 @@ uint8_t dmxIsBlackout() {
 	return 1;
 }
 
+uint16_t dmxGetBrightness(uint8_t channel) {
+	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 4), 0, 255, 0, 4095);
+}
+
 Effect* toEffect(uint8_t effectId) {
 	switch (effectId) {
 		case 0: return new FlashEffect();
@@ -152,9 +159,10 @@ void onDMXFrameReceived (void) {
 }
 
 void blackout() {
-	for(int i = 0; i < 16; i++) {
-		Tlc.set(i, 0);
-	}
+	// for(int i = 0; i < 16; i++) {
+	// 	Tlc.set(i, 0);
+	// }
+	Tlc.clear();
 	Tlc.update();
 }
 
