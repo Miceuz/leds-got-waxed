@@ -48,7 +48,7 @@ void FlashEffect::run(uint16_t newLevel, Output *output) {
 	// Serial.println(newLevel);
 
 	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
-		Tlc.set(output->firstOutput + i, cie(map(curLevel, 0, 800, 0, params.asStruct.maxBrightness)));			
+		Tlc.set(output->firstOutput + i, cie(map(curLevel, 0, 1024, 0, params.asStruct.maxBrightness)));			
 	}
 }
 
@@ -67,7 +67,7 @@ VUMeterEffect::VUMeterEffect() {
 void VUMeterEffect::run(uint16_t newLevel, Output *output) {
 	newLevel = (long) newLevel * params.asStruct.gain >> 10;
 
-	if(newLevel >= curLevel && isNotTriggerHoldOff()) {
+	if(newLevel >= curLevel && newLevel >= params.asStruct.triggerLevel && isNotTriggerHoldOff()) {
 		curLevel = newLevel;
 		lastBlink = millis();
 	} else {

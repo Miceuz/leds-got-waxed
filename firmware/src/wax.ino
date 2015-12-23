@@ -30,11 +30,15 @@ uint16_t dmxGetTriggerHoldOff(uint8_t channel);
 uint8_t dmxIsDataAvaialble();
 uint16_t dmxGetBrightness(uint8_t channel);
 uint16_t dmxGetGain(uint8_t channel);
+uint8_t dmxIsTakeover(uint8_t channel);
 
 uint8_t dmxIsBlackout();
 void blackout();
 
-Channel channels[] = {Channel(0, new Output(0,5)), Channel(1, new Output(5, 5)), Channel(2, new Output(10, 6))};
+Channel channels[] = {
+	Channel(0, new Output(0, 5)), 
+	Channel(1, new Output(5, 5)), 
+	Channel(2, new Output(10, 6))};
 //Channel channels[] =   {Channel(0, new Output(0,15)), Channel(0, new Output(15, 1)), Channel(5, new Output(15,1))};
 void setup() {
 	dmx_slave.enable ();  
@@ -75,6 +79,36 @@ inline static uint8_t isFrameTimeout() {
 uint32_t start;
 extern int __heap_start, *__brkval;
 
+uint8_t takeOverInProgress = 0;
+uint8_t takeOverChannel = 0;
+
+void takeOverAllOutputs(uint8_t takeoverChannel) {
+	takeOverInProgress = 1;
+	takeOverChannel = takeoverChannel;
+
+	for(uint8_t i = 0; i < MAX_INPUTS; i++) {
+		if(i == takeoverChannel) {
+			channels[i].output->outputsInChannel = 16;
+			channels[i].output->firstOutput = 0;
+		} else {
+			channels[i].output->outputsInChannel = 0;
+		}
+	}
+}
+
+void releaseTakeOver() {
+	takeOverInProgress = 0;
+
+	channels[0].output->outputsInChannel = 5;
+	channels[0].output->firstOutput = 0;
+
+	channels[1].output->outputsInChannel = 5;
+	channels[1].output->firstOutput = 5;
+
+	channels[2].output->outputsInChannel = 6;
+	channels[2].output->firstOutput = 10;
+}
+
 void loop() {
 	//TODO paoptimizuoti šito laiką
 	//Apatiniame rėžyje sempluotume 20Hz, jei
@@ -90,7 +124,9 @@ void loop() {
 		} else {
 			for(int i = 0; i < MAX_INPUTS; i++) {
 				channels[i].read(inputs);
-				channels[i].runEffect();
+				if(0 != channels[i].output->outputsInChannel) {
+					channels[i].runEffect();
+				}
 			}
 			Tlc.update();  
 		}
@@ -107,6 +143,16 @@ void loop() {
 				channels[i].effect->params.asStruct.triggerHoldOff = dmxGetTriggerHoldOff(i);
 				channels[i].effect->params.asStruct.maxBrightness = dmxGetBrightness(i);
 				channels[i].effect->params.asStruct.gain = dmxGetGain(i);
+				
+				if(!takeOverInProgress) {
+					if(dmxIsTakeover(i)) {
+						takeOverAllOutputs(i);
+					}
+				} else {
+					if(i == takeOverChannel && !dmxIsTakeover(i)) {
+						releaseTakeOver();
+					}
+				}
 			}
 		}
 		inputs->reset();
@@ -140,6 +186,10 @@ uint16_t dmxGetBrightness(uint8_t channel) {
 
 uint16_t dmxGetGain(uint8_t channel) {
 	return map(dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 6), 0, 255, 256, 2048);
+}
+
+uint8_t dmxIsTakeover(uint8_t channel) {
+	return dmx_slave.getChannelValue(DMX_CHANNELS_PER_CHANNEL * channel + 7) > 0;
 }
 
 uint8_t dmxIsBlackout() {
