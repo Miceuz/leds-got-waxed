@@ -143,35 +143,67 @@ void ChaseEffect::run(uint16_t newLevel, Output *output) {
 	newLevel = (long) newLevel * params.asStruct.gain >> 10;
 	
 	if(newLevel > params.asStruct.triggerLevel && isNotTriggerHoldOff()) {
-		levels[0] = newLevel;
-		flags[0] = 1;
-		lastBlink = millis();
-	} else {
-		for(uint8_t i = 0; i < output->outputsInChannel; i++) {
+//		if(1 != flags[0] && 1 != flags[1]) {
+			levels[0] = newLevel;
+			flags[0] = 1;
+			lastBlink = millis();
+//		}
+	}
 
-			if(levels[i] >= params.asStruct.decay) {
-				if(flags[i]) {
-					levels[i] -= params.asStruct.decay;
-					if(i + 1 < output->outputsInChannel) {
-						levels[i+1] += params.asStruct.decay;
-					}					
-				}
-			} else {
-				if(flags[i]) {
-					if(i + 1 < output->outputsInChannel) {
-						levels[i+1] += levels[i];
-						flags[i+1] = 1;
-					}					
-				}
-				levels[i] = 0;
-				flags[i] = 0;
+	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
+		if(levels[i] >= params.asStruct.decay) {
+			if(flags[i]) {
+				levels[i] -= params.asStruct.decay;
+				if(i + 1 < output->outputsInChannel) {
+					levels[i+1] += params.asStruct.decay;
+					if(levels[i+1] > 1023) {
+						levels[i+1] = 1023;
+					}
+				}					
 			}
+		} else {
+			if(flags[i]) {
+				if(i + 1 < output->outputsInChannel) {
+					levels[i+1] += levels[i];
+					flags[i+1] = 1;
+				}					
+			}
+			levels[i] = 0;
+			flags[i] = 0;
 		}
 	}
 
 	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
 		// Serial.println(levels[i]);
+		if(levels[i] > 1024 || levels[i] < 0) {
+			levels[1] = 1024;
+		}
 		Tlc.set(output->firstOutput + i, cie(map(levels[i], 0, 1024, 0, params.asStruct.maxBrightness)));			
 	}
 }
 
+AntiFlashEffect::AntiFlashEffect() {
+
+}
+
+void AntiFlashEffect::run(uint16_t newLevel, Output *output) {
+	newLevel = (long) newLevel * params.asStruct.gain >> 10;
+
+	if((newLevel > params.asStruct.triggerLevel) && isNotTriggerHoldOff()) {
+		curLevel = newLevel;
+	} else {
+		if(curLevel >= params.asStruct.decay) {
+			curLevel -= params.asStruct.decay;
+		} else {
+			curLevel = 0;
+		}
+	}
+	// Serial.print(" curLevel:");
+	// Serial.println(curLevel);
+	// Serial.print(" newLevel:");
+	// Serial.println(newLevel);
+
+	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
+		Tlc.set(output->firstOutput + i, cie(params.asStruct.maxBrightness - map(curLevel, 0, 1024, 0, params.asStruct.maxBrightness)));			
+	}	
+}

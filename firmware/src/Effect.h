@@ -30,7 +30,7 @@ public:
 	EffectParams params;
 
 protected:
-	uint16_t levels[16];		
+	int16_t levels[16];		
 	uint8_t flags[16];		
 
 	uint16_t curLevel = 0;
@@ -54,13 +54,18 @@ class RandomBlinkEffect : public Effect {
 public:
 	RandomBlinkEffect();
 	void run(uint16_t newLevel, Output *output);
-private:
 };
 
 class ChaseEffect : public Effect {
 public:
 	ChaseEffect();
 	void run(uint16_t newLevel, Output *output);
-private:
 };
+
+class AntiFlashEffect : public Effect {
+public:
+	AntiFlashEffect();
+	void run(uint16_t newLevel, Output *output);
+};
+
 #endif

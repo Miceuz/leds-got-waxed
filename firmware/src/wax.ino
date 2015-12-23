@@ -165,6 +165,9 @@ uint8_t dmxIsDataAvaialble() {
 
 
 uint8_t dmxGetEffectId(uint8_t channel) {
+	if(0 == dmx_slave.getChannelValue (DMX_CHANNELS_PER_CHANNEL * channel + 1)) {
+		return 4;
+	}
 	return dmx_slave.getChannelValue (DMX_CHANNELS_PER_CHANNEL * channel + 1) / 64;
 }
 
@@ -207,6 +210,7 @@ Effect* toEffect(uint8_t effectId) {
 		case 1: return new VUMeterEffect();
 		case 2: return new RandomBlinkEffect();
 		case 3: return new ChaseEffect();
+		case 4: return new AntiFlashEffect();
 	} 
 	return new FlashEffect();
 }
