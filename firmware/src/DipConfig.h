@@ -7,6 +7,10 @@ class DipConfig
 public:
 	DipConfig(uint8_t _latchPin);
 	uint16_t get();
+	inline uint8_t isTestMode() {
+		return 0 != (get() & 1);
+//		return get() & (1 << 11);
+	};
 private:
 	uint8_t latchPin;	
 };

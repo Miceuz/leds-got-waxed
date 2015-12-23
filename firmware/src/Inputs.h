@@ -8,11 +8,12 @@
 class Inputs {
 public:
 //	Inputs();
-	virtual void read();
+	virtual void readSamples(uint16_t samples);
 	virtual uint16_t getVpp(uint8_t channel);
 	virtual void reset();
 private:
-	uint8_t pins[MAX_INPUTS];
+	inline void readSample();
+	uint8_t pins[MAX_INPUTS] = {A0, A1, A2};
 	uint16_t vol[MAX_INPUTS];  
 	uint16_t maxVol[MAX_INPUTS] = {0, 0, 0};
 	uint16_t minVol[MAX_INPUTS] = {1024, 1024, 1024};
@@ -21,18 +22,18 @@ private:
 
 class DummyInputs : public Inputs {
 public:
-	virtual void read() {};
+	// virtual void readSamples(uint16_t samples) {};
 	virtual void reset() {};
-	virtual uint16_t getVpp(uint8_t channel);
+	uint16_t getVpp(uint8_t channel);
 };
 
-class PulseInputs : public Inputs {
+class PulseInputs : public DummyInputs {
 public:
-	virtual void read() {};
-	virtual uint16_t getVpp(uint8_t channel);
+	PulseInputs(uint16_t _pulseTimeout = 1000) : pulseTimeout(_pulseTimeout){};
+	uint16_t getVpp(uint8_t channel);
 private:
-	uint32_t lastPulse;
-	uint16_t pulseTimeout = 3000;
+	uint32_t lastPulse[3];
+	uint16_t pulseTimeout = 1000;
 };
 
 // class RampsInputs : public DummyInputs {

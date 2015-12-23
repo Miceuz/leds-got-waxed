@@ -14,9 +14,17 @@ void Inputs::reset() {
 
 }
 
-void Inputs::read(){
+void Inputs::readSamples(uint16_t samples) {
+	// Serial.println("reading samples");
+	for(uint16_t sample = 0; sample < samples; sample++) {
+		readSample();
+	}
+}
+
+inline void Inputs::readSample() {
 	for(int i = 0; i < MAX_INPUTS; i++) {
 		vol[i] = analogRead(pins[i]);
+		// Serial.println(vol[i]);
 		
 		if(vol[i] > maxVol[i]) {
 			maxVol[i] = vol[i];
@@ -26,6 +34,7 @@ void Inputs::read(){
 			minVol[i] = vol[i];
 		}
 	}
+
 }
 
 uint16_t Inputs::getVpp(uint8_t channel) {
@@ -37,9 +46,9 @@ uint16_t Inputs::getVpp(uint8_t channel) {
 }
 
 uint16_t PulseInputs::getVpp(uint8_t channel) {
-	if(0 == channel && (millis() - lastPulse > pulseTimeout || 0 == lastPulse)) {
-		lastPulse = millis();
-		return 1023;
+	if(millis() - lastPulse[channel] > pulseTimeout || 0 == lastPulse[channel]) {
+		lastPulse[channel] = millis();
+		return 800;
 	}
 	return 0;
 }

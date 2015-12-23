@@ -1,21 +1,11 @@
 #include <Arduino.h>
 #include "Channel.h"
-#include "Inputs.h"
 
-Channel::Channel(uint8_t _inputId, uint8_t _firstOutput):
+Channel::Channel(uint8_t _inputId, Output *_output):
 	inputId(_inputId),
-	firstOutput(_firstOutput),
-	outputsInChannel(5)
-{
+	output(_output) {
 } 
 
-Channel::Channel(uint8_t _inputId, uint8_t _firstOutput, uint8_t _outputsInChannel):
-	inputId(_inputId),
-	firstOutput(_firstOutput),
-	outputsInChannel(_outputsInChannel)
-{
-	effect = new VUMeterEffect();
-} 
 
 void Channel::read(Inputs *inputs) {
 	level = inputs->getVpp(inputId);
@@ -28,12 +18,11 @@ void Channel::setEffect(Effect *newEffect) {
 
 void Channel::runEffect() {
 	if(NULL != effect) {
-		Serial.print("Level: ");
-		Serial.println(level);
-		effect->run(level, firstOutput, outputsInChannel);
+		// Serial.print("Level: ");
+		// Serial.println(level);
+		effect->run(level, output);
 	} else {
-		Serial.println("No effect");
+		// Serial.println("No effect");
 	}
-
 }
 

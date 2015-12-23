@@ -18,3 +18,5 @@ uint16_t DipConfig::get() {
 
 	return (higher << 8) | lower;
 }
+
+
