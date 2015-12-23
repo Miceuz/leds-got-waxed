@@ -77,6 +77,10 @@ FlashEffect::FlashEffect(){
 	id = 0;
 	params.asStruct.decay = 600;
 	params.asStruct.triggerLevel = 400;
+	for(uint8_t i = 0; i < 16; i++) {
+		levels[i] = 0;
+		flags[i] = 0;
+	}
 }
 
 void FlashEffect::run(uint16_t newLevel, Output *output) {
@@ -105,6 +109,10 @@ VUMeterEffect::VUMeterEffect() {
 	params.asStruct.decay = 30;
 	params.asStruct.triggerLevel = 400;
 	params.asStruct.triggerHoldOff = 0;
+	for(uint8_t i = 0; i < 16; i++) {
+		levels[i] = 0;
+		flags[i] = 0;
+	}
 }
 
 void VUMeterEffect::run(uint16_t newLevel, Output *output) {
@@ -170,6 +178,10 @@ RandomBlinkEffect::RandomBlinkEffect() {
 	params.asStruct.decay = 255;
 	params.asStruct.triggerLevel = 200;
 	params.asStruct.triggerHoldOff = 0;
+	for(uint8_t i = 0; i < 16; i++) {
+		levels[i] = 0;
+		flags[i] = 0;
+	}
 }
 
 void RandomBlinkEffect::run(uint16_t newLevel, Output *output) {
@@ -197,7 +209,7 @@ ChaseEffect::ChaseEffect() {
 	params.asStruct.decay = 512;
 	params.asStruct.triggerLevel = 200;
 	params.asStruct.triggerHoldOff = 0;
-	for(uint8_t i = 0; i < 6; i++) {
+	for(uint8_t i = 0; i < 16; i++) {
 		levels[i] = 0;
 		flags[i] = 0;
 	}
