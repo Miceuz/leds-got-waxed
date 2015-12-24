@@ -6,18 +6,12 @@
 
 class EffectParams {
 public:
-	EffectParams(){};
-	union {
-		struct {
-			uint16_t attack = 0;
-			uint16_t decay = 40;
-			uint16_t triggerLevel = 100;	
-			uint16_t triggerHoldOff = 0;
-			uint16_t maxBrightness = 4095;	
-			uint16_t gain = 1300;	
-		} asStruct;
-		uint16_t asArray[3];
-	};
+	uint16_t attack = 0;
+	uint16_t decay = 40;
+	uint16_t triggerLevel = 100;	
+	uint16_t triggerHoldOff = 0;
+	uint16_t maxBrightness = 4095;	
+	uint16_t gain = 1300;	
 };
 
 class Effect{

@@ -69,6 +69,16 @@ inline static uint8_t isFrameTimeout() {
 	return millis() - lastOutputFrameSent > 30;
 }
 
+void dmxLoadParamsFor(Effect *effect, uint8_t channel) {
+	if(effect->id != dmxGetEffectId(channel)) {
+		channels[channel].setEffect(toEffect(dmxGetEffectId(channel)));
+	}
+	effect->params.decay = dmxGetDecay(channel);
+	effect->params.triggerLevel = dmxGetTriggerLevel(channel);
+	effect->params.triggerHoldOff = dmxGetTriggerHoldOff(channel);
+	effect->params.maxBrightness = dmxGetBrightness(channel);
+	effect->params.gain = dmxGetGain(channel);
+}
 
 void loop() {
 	//TODO paoptimizuoti šito laiką
@@ -95,14 +105,7 @@ void loop() {
 
 		if(dmxIsDataAvaialble()) {
 			for(uint8_t i = 0; i < MAX_INPUTS; i++) {
-				if(channels[i].effect->id != dmxGetEffectId(i)) {
-					channels[i].setEffect(toEffect(dmxGetEffectId(i)));
-				}
-				channels[i].effect->params.asStruct.decay = dmxGetDecay(i);
-				channels[i].effect->params.asStruct.triggerLevel = dmxGetTriggerLevel(i);
-				channels[i].effect->params.asStruct.triggerHoldOff = dmxGetTriggerHoldOff(i);
-				channels[i].effect->params.asStruct.maxBrightness = dmxGetBrightness(i);
-				channels[i].effect->params.asStruct.gain = dmxGetGain(i);
+				dmxLoadParamsFor(channels[i].effect, i);
 				
 				if(!takeOverInProgress) {
 					if(dmxIsTakeover(i)) {

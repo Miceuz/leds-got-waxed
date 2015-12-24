@@ -15,14 +15,14 @@ void Effect::run(uint16_t newLevel, Output *output){
 }
 
 uint8_t Effect::isNotTriggerHoldOff() {
-	return (millis() - lastBlink) > params.asStruct.triggerHoldOff;
+	return (millis() - lastBlink) > params.triggerHoldOff;
 }
 
 
 FlashEffect::FlashEffect(){
 	id = 0;
-	params.asStruct.decay = 600;
-	params.asStruct.triggerLevel = 400;
+	params.decay = 600;
+	params.triggerLevel = 400;
 
 	for(uint8_t i = 0; i < 16; i++) {
 		levels[i] = 0;
@@ -31,13 +31,13 @@ FlashEffect::FlashEffect(){
 }
 
 void FlashEffect::run(uint16_t newLevel, Output *output) {
-	newLevel = (long) newLevel * params.asStruct.gain >> 10;
+	newLevel = (long) newLevel * params.gain >> 10;
 
-	if((newLevel > params.asStruct.triggerLevel) && isNotTriggerHoldOff()) {
+	if((newLevel > params.triggerLevel) && isNotTriggerHoldOff()) {
 		curLevel = newLevel;
 	} else {
-		if(curLevel >= params.asStruct.decay) {
-			curLevel -= params.asStruct.decay;
+		if(curLevel >= params.decay) {
+			curLevel -= params.decay;
 		} else {
 			curLevel = 0;
 		}
@@ -48,16 +48,16 @@ void FlashEffect::run(uint16_t newLevel, Output *output) {
 	// Serial.println(newLevel);
 
 	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
-		Tlc.set(output->firstOutput + i, cie(map(curLevel, 0, 1024, 0, params.asStruct.maxBrightness)));			
+		Tlc.set(output->firstOutput + i, cie(map(curLevel, 0, 1024, 0, params.maxBrightness)));			
 	}
 }
 
 
 VUMeterEffect::VUMeterEffect() {
 	id = 1;
-	params.asStruct.decay = 30;
-	params.asStruct.triggerLevel = 400;
-	params.asStruct.triggerHoldOff = 0;
+	params.decay = 30;
+	params.triggerLevel = 400;
+	params.triggerHoldOff = 0;
 	for(uint8_t i = 0; i < 16; i++) {
 		levels[i] = 0;
 		flags[i] = 0;
@@ -65,14 +65,14 @@ VUMeterEffect::VUMeterEffect() {
 }
 
 void VUMeterEffect::run(uint16_t newLevel, Output *output) {
-	newLevel = (long) newLevel * params.asStruct.gain >> 10;
+	newLevel = (long) newLevel * params.gain >> 10;
 
-	if(newLevel >= curLevel && newLevel >= params.asStruct.triggerLevel && isNotTriggerHoldOff()) {
+	if(newLevel >= curLevel && newLevel >= params.triggerLevel && isNotTriggerHoldOff()) {
 		curLevel = newLevel;
 		lastBlink = millis();
 	} else {
-		if(curLevel >= params.asStruct.decay) {
-			curLevel -= params.asStruct.decay;
+		if(curLevel >= params.decay) {
+			curLevel -= params.decay;
 		} else {
 			curLevel = 0;
 		}
@@ -84,11 +84,11 @@ void VUMeterEffect::run(uint16_t newLevel, Output *output) {
 //	uint8_t outputsFullyOn = curLevel * output->outputsInChannel / 800;
 
 	for(int i = 0; i < outputsFullyOn; i++) {
-		Tlc.set(output->firstOutput + i, params.asStruct.maxBrightness);
+		Tlc.set(output->firstOutput + i, params.maxBrightness);
 	}
 
 	if(output->outputsInChannel != outputsFullyOn) {
-		uint16_t lastOutput = map(curLevel - (outputsFullyOn * 1024 / output->outputsInChannel), 0, 1024 / output->outputsInChannel, 0, params.asStruct.maxBrightness);
+		uint16_t lastOutput = map(curLevel - (outputsFullyOn * 1024 / output->outputsInChannel), 0, 1024 / output->outputsInChannel, 0, params.maxBrightness);
 		Tlc.set(output->firstOutput + outputsFullyOn, cie(lastOutput));			
 	}
 
@@ -97,9 +97,9 @@ void VUMeterEffect::run(uint16_t newLevel, Output *output) {
 
 RandomBlinkEffect::RandomBlinkEffect() {
 	id = 2;
-	params.asStruct.decay = 255;
-	params.asStruct.triggerLevel = 200;
-	params.asStruct.triggerHoldOff = 0;
+	params.decay = 255;
+	params.triggerLevel = 200;
+	params.triggerHoldOff = 0;
 	for(uint8_t i = 0; i < 16; i++) {
 		levels[i] = 0;
 		flags[i] = 0;
@@ -107,15 +107,15 @@ RandomBlinkEffect::RandomBlinkEffect() {
 }
 
 void RandomBlinkEffect::run(uint16_t newLevel, Output *output) {
-	newLevel = (long) newLevel * params.asStruct.gain >> 10;
+	newLevel = (long) newLevel * params.gain >> 10;
 
-	if(newLevel > params.asStruct.triggerLevel && isNotTriggerHoldOff()) {
+	if(newLevel > params.triggerLevel && isNotTriggerHoldOff()) {
 		levels[random(output->outputsInChannel)] = newLevel;
 		lastBlink = millis();
 	} else {
 		for(uint8_t i = 0; i < output->outputsInChannel; i++) {
-			if(levels[i] >= params.asStruct.decay) {
-				levels[i] -= params.asStruct.decay;
+			if(levels[i] >= params.decay) {
+				levels[i] -= params.decay;
 			} else {
 				levels[i] = 0;
 			}
@@ -124,15 +124,15 @@ void RandomBlinkEffect::run(uint16_t newLevel, Output *output) {
 
 	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
 		// Serial.println(levels[i]);
-		Tlc.set(output->firstOutput + i, cie(map(levels[i], 0, 1024, 0, params.asStruct.maxBrightness)));			
+		Tlc.set(output->firstOutput + i, cie(map(levels[i], 0, 1024, 0, params.maxBrightness)));			
 	}
 }
 
 ChaseEffect::ChaseEffect() {
 	id = 3;
-	params.asStruct.decay = 512;
-	params.asStruct.triggerLevel = 200;
-	params.asStruct.triggerHoldOff = 0;
+	params.decay = 512;
+	params.triggerLevel = 200;
+	params.triggerHoldOff = 0;
 	for(uint8_t i = 0; i < 16; i++) {
 		levels[i] = 0;
 		flags[i] = 0;
@@ -140,9 +140,9 @@ ChaseEffect::ChaseEffect() {
 }
 
 void ChaseEffect::run(uint16_t newLevel, Output *output) {
-	newLevel = (long) newLevel * params.asStruct.gain >> 10;
+	newLevel = (long) newLevel * params.gain >> 10;
 	
-	if(newLevel > params.asStruct.triggerLevel && isNotTriggerHoldOff()) {
+	if(newLevel > params.triggerLevel && isNotTriggerHoldOff()) {
 //		if(1 != flags[0] && 1 != flags[1]) {
 			levels[0] = newLevel;
 			flags[0] = 1;
@@ -151,11 +151,11 @@ void ChaseEffect::run(uint16_t newLevel, Output *output) {
 	}
 
 	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
-		if(levels[i] >= params.asStruct.decay) {
+		if(levels[i] >= params.decay) {
 			if(flags[i]) {
-				levels[i] -= params.asStruct.decay;
+				levels[i] -= params.decay;
 				if(i + 1 < output->outputsInChannel) {
-					levels[i+1] += params.asStruct.decay;
+					levels[i+1] += params.decay;
 					if(levels[i+1] > 1023) {
 						levels[i+1] = 1023;
 					}
@@ -178,7 +178,7 @@ void ChaseEffect::run(uint16_t newLevel, Output *output) {
 		if(levels[i] > 1024 || levels[i] < 0) {
 			levels[1] = 1024;
 		}
-		Tlc.set(output->firstOutput + i, cie(map(levels[i], 0, 1024, 0, params.asStruct.maxBrightness)));			
+		Tlc.set(output->firstOutput + i, cie(map(levels[i], 0, 1024, 0, params.maxBrightness)));			
 	}
 }
 
@@ -187,13 +187,13 @@ AntiFlashEffect::AntiFlashEffect() {
 }
 
 void AntiFlashEffect::run(uint16_t newLevel, Output *output) {
-	newLevel = (long) newLevel * params.asStruct.gain >> 10;
+	newLevel = (long) newLevel * params.gain >> 10;
 
-	if((newLevel > params.asStruct.triggerLevel) && isNotTriggerHoldOff()) {
+	if((newLevel > params.triggerLevel) && isNotTriggerHoldOff()) {
 		curLevel = newLevel;
 	} else {
-		if(curLevel >= params.asStruct.decay) {
-			curLevel -= params.asStruct.decay;
+		if(curLevel >= params.decay) {
+			curLevel -= params.decay;
 		} else {
 			curLevel = 0;
 		}
@@ -204,6 +204,6 @@ void AntiFlashEffect::run(uint16_t newLevel, Output *output) {
 	// Serial.println(newLevel);
 
 	for(uint8_t i = 0; i < output->outputsInChannel; i++) {
-		Tlc.set(output->firstOutput + i, cie(params.asStruct.maxBrightness - map(curLevel, 0, 1024, 0, params.asStruct.maxBrightness)));			
+		Tlc.set(output->firstOutput + i, cie(params.maxBrightness - map(curLevel, 0, 1024, 0, params.maxBrightness)));			
 	}	
 }
