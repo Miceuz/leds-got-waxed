@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE FixtureDefinition>
+<FixtureDefinition xmlns="http://www.qlcplus.org/FixtureDefinition">
+ <Creator>
+  <Name>Q Light Controller Plus</Name>
+  <Version>4.10.2</Version>
+  <Author>miceuz</Author>
+ </Creator>
+ <Manufacturer>Technarium</Manufacturer>
+ <Model>SGW-1</Model>
+ <Type>Other</Type>
+ <Channel Name="Effect 1">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="51">Flash</Capability>
+  <Capability Min="52" Max="103">VUMeter</Capability>
+  <Capability Min="104" Max="155">RandomBlink</Capability>
+  <Capability Min="156" Max="207">Chase</Capability>
+  <Capability Min="208" Max="255">AntiFlash</Capability>
+ </Channel>
+ <Channel Name="Decay 1">
+  <Group Byte="0">Speed</Group>
+  <Capability Min="0" Max="255">Decay</Capability>
+ </Channel>
+ <Channel Name="Trigger level 1">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Trigger Hold Off 1">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Master 1">
+  <Group Byte="0">Intensity</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Gain 1">
+  <Group Byte="0">Nothing</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Config 1">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="0" Max="0">Normal</Capability>
+  <Capability Min="1" Max="255">Takeover</Capability>
+ </Channel>
+ <Channel Name="Effect 2">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="51">Flash</Capability>
+  <Capability Min="52" Max="103">VUMeter</Capability>
+  <Capability Min="104" Max="155">RandomBlink</Capability>
+  <Capability Min="156" Max="207">Chase</Capability>
+  <Capability Min="208" Max="255">AntiFlash</Capability>
+ </Channel>
+ <Channel Name="Decay 2">
+  <Group Byte="0">Speed</Group>
+  <Capability Min="0" Max="255">Decay</Capability>
+ </Channel>
+ <Channel Name="Trigger level 2">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Trigger Hold Off 2">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Master 2">
+  <Group Byte="0">Intensity</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Gain 2">
+  <Group Byte="0">Nothing</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Config 2">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="0" Max="0">Normal</Capability>
+  <Capability Min="1" Max="255">Takeover</Capability>
+ </Channel>
+ <Channel Name="Effect 3">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="51">Flash</Capability>
+  <Capability Min="52" Max="103">VUMeter</Capability>
+  <Capability Min="104" Max="155">RandomBlink</Capability>
+  <Capability Min="156" Max="207">Chase</Capability>
+  <Capability Min="208" Max="255">AntiFlash</Capability>
+ </Channel>
+ <Channel Name="Decay 3">
+  <Group Byte="0">Speed</Group>
+  <Capability Min="0" Max="255">Decay</Capability>
+ </Channel>
+ <Channel Name="Trigger level 3">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Trigger Hold Off 3">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Master 3">
+  <Group Byte="0">Intensity</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Gain 3">
+  <Group Byte="0">Nothing</Group>
+  <Capability Min="0" Max="255">Trigger</Capability>
+ </Channel>
+ <Channel Name="Config 3">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="0" Max="0">Normal</Capability>
+  <Capability Min="1" Max="255">Takeover</Capability>
+ </Channel>
+ <Mode Name="Standard">
+  <Physical>
+   <Bulb Type="" Lumens="0" ColourTemperature="0"/>
+   <Dimensions Weight="0" Width="0" Height="0" Depth="0"/>
+   <Lens Name="Other" DegreesMin="0" DegreesMax="0"/>
+   <Focus Type="Fixed" PanMax="0" TiltMax="0"/>
+   <Technical PowerConsumption="0" DmxConnector="5-pin"/>
+  </Physical>
+  <Channel Number="0">Effect 1</Channel>
+  <Channel Number="1">Decay 1</Channel>
+  <Channel Number="2">Trigger level 1</Channel>
+  <Channel Number="3">Trigger Hold Off 1</Channel>
+  <Channel Number="4">Master 1</Channel>
+  <Channel Number="5">Gain 1</Channel>
+  <Channel Number="6">Config 1</Channel>
+  <Channel Number="7">Effect 2</Channel>
+  <Channel Number="8">Decay 2</Channel>
+  <Channel Number="9">Trigger level 2</Channel>
+  <Channel Number="10">Trigger Hold Off 2</Channel>
+  <Channel Number="11">Master 2</Channel>
+  <Channel Number="12">Gain 2</Channel>
+  <Channel Number="13">Config 2</Channel>
+  <Channel Number="14">Effect 3</Channel>
+  <Channel Number="15">Decay 3</Channel>
+  <Channel Number="16">Trigger level 3</Channel>
+  <Channel Number="17">Trigger Hold Off 3</Channel>
+  <Channel Number="18">Master 3</Channel>
+  <Channel Number="19">Gain 3</Channel>
+  <Channel Number="20">Config 3</Channel>
+ </Mode>
+</FixtureDefinition>
