@@ -1,0 +1,32 @@
+ #include <SPI.h>
+#include "DipConfig.h"
+#include "Inputs.h"
+#include "Channel.h"
+#include "Output.h"
+#include <Conceptinetics.h>
+
+#define DMX_CHANNELS_PER_CHANNEL 7
+
+#define DMX_SLAVE_CHANNELS DMX_CHANNELS_PER_CHANNEL * MAX_INPUTS 
+
+#define PIN_DIP_CLK 4
+#define PIN_DIP_DATA 6
+#define PIN_DIP_LATCH 5
+
+DipConfig dipConfig(PIN_DIP_LATCH, PIN_DIP_CLK, PIN_DIP_DATA);
+
+void setup() {
+	Serial.begin(9600);
+	SPI.begin();
+	Serial.println(dipConfig.get());
+
+	Tlc.init();
+}
+
+void loop() {
+ 	Serial.println(dipConfig.get());
+ 	Tlc.set(0, 1024);
+	Tlc.set(1, 2048);
+	Tlc.set(2, 4095);
+	Tlc.update();
+}

@@ -1,28 +1,34 @@
- #include <SPI.h>
 #include "DipConfig.h"
 #include "Inputs.h"
 #include "Channel.h"
 #include "Output.h"
 #include <Conceptinetics.h>
 
+#define PIN_DIP_CLK 4
+#define PIN_DIP_DATA 6
+#define PIN_DIP_LATCH 5
+DipConfig dipConfig(PIN_DIP_LATCH, PIN_DIP_CLK, PIN_DIP_DATA);
+
 #define DMX_CHANNELS_PER_CHANNEL 7
-
 #define DMX_SLAVE_CHANNELS DMX_CHANNELS_PER_CHANNEL * MAX_INPUTS 
-#define PIN_DIP_LATCH 8
-
-#include "memdebug.h"
-
+void onDMXFrameReceived (void);
 DMX_Slave dmx_slave ( DMX_SLAVE_CHANNELS, 2);
 unsigned long       lastFrameReceivedTime;
-void onDMXFrameReceived (void);
 
-DipConfig dipConfig(PIN_DIP_LATCH);
+
+Channel channels[] = {
+	Channel(0, new Output(0, 5)), 
+	Channel(1, new Output(5, 5)), 
+	Channel(2, new Output(10, 6))};
 
 Inputs *inputs;
-Inputs adcInputs;
-PulseInputs pulseDummyInputs;
+
+uint32_t lastOutputFrameSent = 0;
+uint8_t takeOverInProgress = 0;
+uint8_t takeOverChannel = 0;
 
 Effect* toEffect(uint8_t effectId);
+
 uint8_t dmxGetEffectId(uint8_t channel);
 uint16_t dmxGetDecay(uint8_t channel);
 uint16_t dmxGetTriggerLevel(uint8_t channel);
@@ -31,89 +37,43 @@ uint8_t dmxIsDataAvaialble();
 uint16_t dmxGetBrightness(uint8_t channel);
 uint16_t dmxGetGain(uint8_t channel);
 uint8_t dmxIsTakeover(uint8_t channel);
-
 uint8_t dmxIsBlackout();
-void blackout();
 
-Channel channels[] = {
-	Channel(0, new Output(0, 5)), 
-	Channel(1, new Output(5, 5)), 
-	Channel(2, new Output(10, 6))};
-//Channel channels[] =   {Channel(0, new Output(0,15)), Channel(0, new Output(15, 1)), Channel(5, new Output(15,1))};
+void blackout();
+void takeOverAllOutputs(uint8_t takeoverChannel);
+void releaseTakeOver();
+
 void setup() {
+	ADCSRA = _BV(ADEN) | _BV(ADPS1) | _BV(ADPS2);
+	randomSeed(analogRead(0));
+
 	dmx_slave.enable ();  
 	dmx_slave.setStartAddress (1);
 	dmx_slave.onReceiveComplete (onDMXFrameReceived);
 
-	ADCSRA = _BV(ADEN) | _BV(ADPS1) | _BV(ADPS2);
 	Tlc.init();
-	SPI.begin();
 	// Serial.begin(9600);
 	channels[0].setEffect(new ChaseEffect());
 	channels[1].setEffect(new ChaseEffect());
 	channels[2].setEffect(new ChaseEffect());
 
-//	Serial.println(dipConfig.get());
-	// if(dipConfig.isTestMode()) {
-	// 	Serial.println("test mode");
-	// 	inputs = new PulseInputs();
-	// } else {
-	// 	inputs = new Inputs();
-	// }
-
-    inputs = new Inputs();
-//	inputs = new PulseInputs();
-	randomSeed(analogRead(0));
+	if(dipConfig.isTestMode()) {
+		inputs = new PulseInputs();
+	} else {
+		inputs = new Inputs();
+	}
 }
 
-int freeRam();
-
-uint32_t lastOutputFrameSent = 0;
-uint8_t b=0;
-uint16_t frames;
 
 inline static uint8_t isFrameTimeout() {
 	return millis() - lastOutputFrameSent > 30;
 }
 
-uint32_t start;
-extern int __heap_start, *__brkval;
-
-uint8_t takeOverInProgress = 0;
-uint8_t takeOverChannel = 0;
-
-void takeOverAllOutputs(uint8_t takeoverChannel) {
-	takeOverInProgress = 1;
-	takeOverChannel = takeoverChannel;
-
-	for(uint8_t i = 0; i < MAX_INPUTS; i++) {
-		if(i == takeoverChannel) {
-			channels[i].output->outputsInChannel = 16;
-			channels[i].output->firstOutput = 0;
-		} else {
-			channels[i].output->outputsInChannel = 0;
-		}
-	}
-}
-
-void releaseTakeOver() {
-	takeOverInProgress = 0;
-
-	channels[0].output->outputsInChannel = 5;
-	channels[0].output->firstOutput = 0;
-
-	channels[1].output->outputsInChannel = 5;
-	channels[1].output->firstOutput = 5;
-
-	channels[2].output->outputsInChannel = 6;
-	channels[2].output->firstOutput = 10;
-}
 
 void loop() {
 	//TODO paoptimizuoti šito laiką
 	//Apatiniame rėžyje sempluotume 20Hz, jei
 	//nuskaitytume bent 300 semplų per freimą.
-	start = millis();
 	inputs->readSamples(100);
 
 	if(isFrameTimeout()) {
@@ -216,17 +176,33 @@ void onDMXFrameReceived (void) {
 }
 
 void blackout() {
-	// for(int i = 0; i < 16; i++) {
-	// 	Tlc.set(i, 0);
-	// }
 	Tlc.clear();
 	Tlc.update();
 }
 
-// int freeRam () {
-//   extern int __heap_start, *__brkval; 
-//   int v; 
-//   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
-// }
+void takeOverAllOutputs(uint8_t takeoverChannel) {
+	takeOverInProgress = 1;
+	takeOverChannel = takeoverChannel;
 
-//ChaseEffect
+	for(uint8_t i = 0; i < MAX_INPUTS; i++) {
+		if(i == takeoverChannel) {
+			channels[i].output->outputsInChannel = 16;
+			channels[i].output->firstOutput = 0;
+		} else {
+			channels[i].output->outputsInChannel = 0;
+		}
+	}
+}
+
+void releaseTakeOver() {
+	takeOverInProgress = 0;
+
+	channels[0].output->outputsInChannel = 5;
+	channels[0].output->firstOutput = 0;
+
+	channels[1].output->outputsInChannel = 5;
+	channels[1].output->firstOutput = 5;
+
+	channels[2].output->outputsInChannel = 6;
+	channels[2].output->firstOutput = 10;
+}
