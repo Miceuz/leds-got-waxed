@@ -163,12 +163,8 @@ uint8_t dmxIsDataAvaialble() {
 	return lastFrameReceivedTime > 0 && millis() - lastFrameReceivedTime < 1000;
 }
 
-
 uint8_t dmxGetEffectId(uint8_t channel) {
-	if(0 == dmx_slave.getChannelValue (DMX_CHANNELS_PER_CHANNEL * channel + 1)) {
-		return 4;
-	}
-	return dmx_slave.getChannelValue (DMX_CHANNELS_PER_CHANNEL * channel + 1) / 64;
+	return dmx_slave.getChannelValue (DMX_CHANNELS_PER_CHANNEL * channel + 1) / 52;
 }
 
 uint16_t dmxGetDecay(uint8_t channel) {
