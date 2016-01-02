@@ -59,6 +59,12 @@ void setup() {
 
 	if(dipConfig.isTestMode()) {
 		inputs = new PulseInputs();
+		channels[0].setEffect(toEffect((uint8_t) dipConfig.get() & 0x07));
+		channels[1].setEffect(toEffect((uint8_t) dipConfig.get() & 0x07));
+		channels[2].setEffect(toEffect((uint8_t) dipConfig.get() & 0x07));
+		if(dipConfig.get() & 0x08) {
+			takeOverAllOutputs(0);
+		}
 	} else {
 		inputs = new Inputs();
 	}
