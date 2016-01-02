@@ -20,3 +20,23 @@ Op amp creates a virtual ground midpoint. Single ended signal is AC coupled and 
 
 The segments had to be put on the floor at 45 degree level. I have had a go with OpenSCAD to model feet to accomodate that.
 
+Since we have plenty of those, I have used a chinese ebay "LED amplifier". Inside it looks like a dumbed down RGB dimmer version with a chinese microcontroller and a mosfet. It acts like a transistor - when you power a pin, it switches the other two. As you need to provide at least 12V to switch, they are robust enough - no crosstalk problems whatsoever.
+
+Wiring is a mess as I couldn't think a of good way to provide power and data to strips with quick-disconnect connectors, so I have made it the dumb way.
+
+In the middle of the project I have decided to ditch the switch and potentiometer idea - musicians have enough stuff to do on stage anyway and lightning is a job of the lightning engineer. All the parameters of the channels will be controlled via DMX from lightning console.
+
+I have used the 74HC165 serial shift in register to read the dip switch for the DMX address and test modes. This didn't work in the beginning as it appeared SPI comm was breaking TLC comm somehow, no time to debug that as we are going live in a couple of days and those couple of days are christmass eve and co. So I have fallen back to bitbanging to read dip switch. It seems SPI bus can not be used while TLC chip library is actively pushing data.
+
+Then I have assembled everything into a box. I've tried my best, but not every part is pretty, especially the square holes. 
+
+For control I have leveraged a wonderful program QLC+ - we worked together with the band and the light engineer to expose over DMX as much means for controlling effects as possible:
+ - Effect -- the effect style
+ - Trigger level -- the level of audio which triggers the effect
+ - Trigger hold off -- time to now trigger after triggering
+ - Decay speed -- how fast the effect fades
+ - Master -- max brightness level
+ - Gain -- audio input level multiplier
+
+
+ All in all there's a big question if all of this could not be implemented in QLC+ or the professional lightning console alone, but I wanted a journey, I had a journey.
